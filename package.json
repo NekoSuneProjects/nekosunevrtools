@@ -1,35 +1,42 @@
 {
-  "name": "@nekosuneprojects/nekosunevrtools",
-  "version": "1.1.1",
-  "description": "Multi-platform file upload client for Node.js with pluggable adapters, progress events, and CLI support.",
-  "main": "src/index.js",
-  "types": "src/index.d.ts",
-  "bin": {
-    "nekosunevrtools": "bin/nekosunevrtools.js"
-  },
-  "scripts": {
-    "check": "node --check src/index.js && node --check src/downloader/client.js && node --check src/downloader/providers.js && node --check src/downloader/provider/compatible.js && node --check src/upload/client.js && node --check src/upload/providers.js && node --check src/upload/provider/upfiles.js && node --check src/upload/provider/fileio.js && node --check src/upload/provider/catbox.js && node --check src/upload/provider/transfersh.js && node --check src/shorturl/providers.js && node --check src/shorturl/provider/adlinkfly-compatible.js && node --check src/shorturl/provider/presets.js && node --check src/video/providers.js && node --check src/video/provider/doodstream.js && node --check src/upload-client.js && node --check src/earnings.js && node --check src/cli.js && node --check src/utils/file.js && node --check bin/nekosunevrtools.js"
-  },
-  "keywords": [
-    "upload",
-    "file-upload",
-    "upfiles",
-    "api-client",
-    "cli",
-    "discord",
-    "nodejs",
-    "downloader",
-    "youtube",
-    "mp3",
-    "mp4"
-  ],
-  "author": "",
-  "license": "MIT",
-  "dependencies": {
-    "axios": "^1.8.4",
-    "form-data": "^4.0.1"
-  },
-  "engines": {
-    "node": ">=18.0.0"
-  }
+    "name":  "@nekosuneprojects/nekosunevrtools",
+    "version":  "1.1.1",
+    "description":  "Multi-platform file upload client for Node.js with pluggable adapters, progress events, and CLI support.",
+    "main":  "src/index.js",
+    "types":  "src/index.d.ts",
+    "bin":  {
+                "nekosunevrtools":  "bin/nekosunevrtools.js"
+            },
+    "scripts":  {
+                    "check":  "node --check src/index.js \u0026\u0026 node --check src/downloader/client.js \u0026\u0026 node --check src/downloader/providers.js \u0026\u0026 node --check src/downloader/provider/compatible.js \u0026\u0026 node --check src/livestream/client.js \u0026\u0026 node --check src/livestream/providers.js \u0026\u0026 node --check src/livestream/provider/nekosune-api.js \u0026\u0026 node --check src/games/client.js \u0026\u0026 node --check src/games/providers.js \u0026\u0026 node --check src/games/provider/nekosune-api.js \u0026\u0026 node --check src/upload/client.js \u0026\u0026 node --check src/upload/providers.js \u0026\u0026 node --check src/upload/provider/upfiles.js \u0026\u0026 node --check src/upload/provider/fileio.js \u0026\u0026 node --check src/upload/provider/catbox.js \u0026\u0026 node --check src/upload/provider/transfersh.js \u0026\u0026 node --check src/shorturl/providers.js \u0026\u0026 node --check src/shorturl/provider/adlinkfly-compatible.js \u0026\u0026 node --check src/shorturl/provider/presets.js \u0026\u0026 node --check src/video/providers.js \u0026\u0026 node --check src/video/provider/doodstream.js \u0026\u0026 node --check src/upload-client.js \u0026\u0026 node --check src/earnings.js \u0026\u0026 node --check src/cli.js \u0026\u0026 node --check src/utils/file.js \u0026\u0026 node --check bin/nekosunevrtools.js"
+                },
+    "keywords":  [
+                     "upload",
+                     "file-upload",
+                     "upfiles",
+                     "api-client",
+                     "cli",
+                     "discord",
+                     "nodejs",
+                     "downloader",
+                     "youtube",
+                     "mp3",
+                     "mp4",
+                     "livestream",
+                     "twitch",
+                     "kick",
+                     "trovo",
+                     "dlive",
+                     "clashofclans",
+                     "games-api"
+                 ],
+    "author":  "",
+    "license":  "MIT",
+    "dependencies":  {
+                         "axios":  "^1.8.4",
+                         "form-data":  "^4.0.1"
+                     },
+    "engines":  {
+                    "node":  "\u003e=18.0.0"
+                }
 }

@@ -1,6 +1,6 @@
 const path = require("path");
 const axios = require("axios");
-const { UploadClient, EarningsClient, shortenerPresets, DownloaderClient, downloaderPresets } = require("./index");
+const { UploadClient, EarningsClient, shortenerPresets, DownloaderClient, downloaderPresets, LivestreamClient, livestreamPresets, GamesClient, gamesPresets } = require("./index");
 
 async function runCli(argv = process.argv.slice(2)) {
   const parsed = parseArgs(argv);
@@ -44,7 +44,71 @@ async function runCli(argv = process.argv.slice(2)) {
     process.stdout.write(`${Object.keys(shortenerPresets).join("\n")}\n`);
     return 0;
   }
-  if (parsed.command === "list-download-presets") {
+  if (parsed.command === "live-kick") {
+    return runLivestreamCommand(parsed, "kick");
+  }
+  if (parsed.command === "live-twitch") {
+    return runLivestreamCommand(parsed, "twitch");
+  }
+  if (parsed.command === "live-dlive") {
+    return runLivestreamCommand(parsed, "dlive");
+  }
+  if (parsed.command === "live-trovo") {
+    return runLivestreamCommand(parsed, "trovo");
+  }
+  if (parsed.command === "live") {
+    return runLivestreamCommand(parsed, parsed.streamPlatform);
+  }
+  if (parsed.command === "coc-clan") {
+    return runClashOfClansClanCommand(parsed);
+  }
+  if (parsed.command === "coc-player") {
+    return runClashOfClansPlayerCommand(parsed);
+  }
+  if (parsed.command === "division2-player" || parsed.command === "td2-player") {
+    return runDivision2PlayerCommand(parsed);
+  }
+  if (parsed.command === "fortnite-player" || parsed.command === "fn-player") {
+    return runFortnitePlayerCommand(parsed);
+  }
+  if (parsed.command === "fortnite-creatorcode" || parsed.command === "fn-creatorcode") {
+    return runFortniteCreatorCodeCommand(parsed);
+  }
+  if (parsed.command === "fortnite-item-shop" || parsed.command === "fn-item-shop") {
+    return runFortniteItemShopCommand(parsed);
+  }
+  if (parsed.command === "wynncraft-profile" || parsed.command === "wc-profile") {
+    return runWynncraftProfileCommand(parsed);
+  }
+  if (parsed.command === "hypixel-profile" || parsed.command === "hp-profile") {
+    return runHypixelProfileCommand(parsed);
+  }
+  if (parsed.command === "rocketleague-player" || parsed.command === "rl-player") {
+    return runRocketLeaguePlayerCommand(parsed);
+  }
+  if (parsed.command === "apexlegends-player" || parsed.command === "apex-player") {
+    return runApexLegendsPlayerCommand(parsed);
+  }
+  if (parsed.command === "battlefield1-player" || parsed.command === "bf1-player") {
+    return runBattlefield1PlayerCommand(parsed);
+  }
+  if (parsed.command === "battlefield5-player" || parsed.command === "bf5-player") {
+    return runBattlefield5PlayerCommand(parsed);
+  }
+  if (parsed.command === "battlefield2042-player" || parsed.command === "bf2042-player") {
+    return runBattlefield2042PlayerCommand(parsed);
+  }
+  if (parsed.command === "battlefield6-player" || parsed.command === "bf6-player") {
+    return runBattlefield6PlayerCommand(parsed);
+  }
+  if (parsed.command === "list-livestream-presets") {
+    process.stdout.write(`${Object.keys(livestreamPresets).join("\n")}\n`);
+    return 0;
+  }
+  if (parsed.command === "list-games-presets") {
+    process.stdout.write(`${Object.keys(gamesPresets).join("\n")}\n`);
+    return 0;
+  }  if (parsed.command === "list-download-presets") {
     process.stdout.write(`${Object.keys(downloaderPresets).join("\n")}\n`);
     return 0;
   }
@@ -60,6 +124,366 @@ function buildDownloaderClient(parsed) {
     preset: parsed.downloaderPreset || "nekosune",
     timeoutMs: parsed.timeoutMs || 120000
   });
+}
+
+function buildLivestreamClient(parsed) {
+  return new LivestreamClient({
+    apiKey: parsed.apiKey || null,
+    baseUrl: parsed.livestreamBaseUrl || null,
+    preset: parsed.livestreamPreset || "nekosune",
+    timeoutMs: parsed.timeoutMs || 60000
+  });
+}
+
+function buildGamesClient(parsed) {
+  return new GamesClient({
+    apiKey: parsed.apiKey || null,
+    baseUrl: parsed.gamesBaseUrl || null,
+    preset: parsed.gamesPreset || "nekosune",
+    timeoutMs: parsed.timeoutMs || 60000
+  });
+}
+
+async function runLivestreamCommand(parsed, explicitPlatform) {
+  const platform = explicitPlatform || parsed.streamPlatform;
+  const username = parsed.username || parsed.url;
+  if (!platform) {
+    throw new Error("Missing livestream platform. Use live-kick/live-twitch/live-dlive/live-trovo or --stream-platform.");
+  }
+  if (!username) {
+    throw new Error("Missing --username for livestream command.");
+  }
+  if (!parsed.apiKey) {
+    throw new Error("Missing --apikey for livestream command.");
+  }
+
+  const client = buildLivestreamClient(parsed);
+  let result;
+  if (platform === "kick") {
+    result = await client.getKick(username);
+  } else if (platform === "twitch") {
+    result = await client.getTwitch(username);
+  } else if (platform === "dlive") {
+    result = await client.getDlive(username);
+  } else if (platform === "trovo") {
+    result = await client.getTrovo(username);
+  } else {
+    result = await client.getByPlatform(platform, username);
+  }
+
+  if (parsed.json) {
+    process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+  } else {
+    const online = result && result.livestream ? result.livestream.online : null;
+    process.stdout.write(`${result.displayname || result.username || username} online=${String(Boolean(online))}\n`);
+  }
+  return 0;
+}
+
+async function runClashOfClansClanCommand(parsed) {
+  const tag = parsed.clanTag || parsed.tag;
+  if (!tag) {
+    throw new Error("Missing --clan-tag for coc-clan.");
+  }
+  if (!parsed.apiKey) {
+    throw new Error("Missing --apikey for coc-clan.");
+  }
+
+  const client = buildGamesClient(parsed);
+  const result = await client.getClashOfClansClan(tag);
+  if (parsed.json) {
+    process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+  } else {
+    process.stdout.write(`${result.name || "Clan"} ${result.tag || ""} members=${result.memberCount || 0}\n`);
+  }
+  return 0;
+}
+
+async function runClashOfClansPlayerCommand(parsed) {
+  const tag = parsed.playerTag || parsed.tag;
+  if (!tag) {
+    throw new Error("Missing --player-tag for coc-player.");
+  }
+  if (!parsed.apiKey) {
+    throw new Error("Missing --apikey for coc-player.");
+  }
+
+  const client = buildGamesClient(parsed);
+  const result = await client.getClashOfClansPlayer(tag);
+  if (parsed.json) {
+    process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+  } else {
+    process.stdout.write(`${result.name || "Player"} ${result.tag || ""} th=${result.townHallLevel || "?"}\n`);
+  }
+  return 0;
+}
+
+async function runDivision2PlayerCommand(parsed) {
+  const username = parsed.username || parsed.url;
+  const platform = parsed.divisionPlatform || parsed.platform || "psn";
+
+  if (!username) {
+    throw new Error("Missing --username for division2-player.");
+  }
+  if (!parsed.apiKey) {
+    throw new Error("Missing --apikey for division2-player.");
+  }
+
+  const client = buildGamesClient(parsed);
+  const result = await client.getDivision2Player(username, platform);
+  if (parsed.json) {
+    process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+  } else {
+    const source = result && result.profile && result.profile.data ? result.profile.data : null;
+    const handle = source && source.platformInfo ? source.platformInfo.platformUserHandle : username;
+    process.stdout.write(`${handle} platform=${platform}\n`);
+  }
+  return 0;
+}
+
+async function runFortnitePlayerCommand(parsed) {
+  const username = parsed.username || parsed.url;
+  const timeWindow = parsed.timeWindow || "lifetime";
+
+  if (!username) {
+    throw new Error("Missing --username for fortnite-player.");
+  }
+  if (!parsed.apiKey) {
+    throw new Error("Missing --apikey for fortnite-player.");
+  }
+
+  const client = buildGamesClient(parsed);
+  const result = await client.getFortnitePlayer(username, timeWindow);
+  if (parsed.json) {
+    process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+  } else {
+    const accountName = result && result.data && result.data.account ? result.data.account.name : username;
+    const wins = result && result.data && result.data.stats && result.data.stats.all && result.data.stats.all.overall
+      ? result.data.stats.all.overall.wins
+      : 0;
+    process.stdout.write(`${accountName} timeWindow=${timeWindow} wins=${wins}\n`);
+  }
+  return 0;
+}
+
+async function runFortniteCreatorCodeCommand(parsed) {
+  const creatorCode = parsed.creatorCode || parsed.code || parsed.username || parsed.url;
+
+  if (!creatorCode) {
+    throw new Error("Missing --creator-code for fortnite-creatorcode.");
+  }
+  if (!parsed.apiKey) {
+    throw new Error("Missing --apikey for fortnite-creatorcode.");
+  }
+
+  const client = buildGamesClient(parsed);
+  const result = await client.getFortniteCreatorCode(creatorCode);
+  if (parsed.json) {
+    process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+  } else {
+    const code = result && result.data ? result.data.code : creatorCode;
+    const status = result && result.data ? result.data.status : "unknown";
+    process.stdout.write(`${code} status=${status}\n`);
+  }
+  return 0;
+}
+
+async function runFortniteItemShopCommand(parsed) {
+  if (!parsed.apiKey) {
+    throw new Error("Missing --apikey for fortnite-item-shop.");
+  }
+
+  const client = buildGamesClient(parsed);
+  const result = await client.getFortniteItemShop();
+  if (parsed.json) {
+    process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+  } else {
+    const data = result && result.data ? result.data : {};
+    const date = data.date || "unknown";
+    const entries = Array.isArray(data.entries) ? data.entries.length : 0;
+    process.stdout.write(`date=${date} entries=${entries}\n`);
+  }
+  return 0;
+}
+
+async function runWynncraftProfileCommand(parsed) {
+  const username = parsed.username || parsed.url;
+
+  if (!username) {
+    throw new Error("Missing --username for wynncraft-profile.");
+  }
+  if (!parsed.apiKey) {
+    throw new Error("Missing --apikey for wynncraft-profile.");
+  }
+
+  const client = buildGamesClient(parsed);
+  const result = await client.getWynncraftProfile(username);
+  if (parsed.json) {
+    process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+  } else {
+    process.stdout.write(`${result.username || username} online=${String(Boolean(result.online))}\n`);
+  }
+  return 0;
+}
+
+async function runHypixelProfileCommand(parsed) {
+  const username = parsed.username || parsed.url;
+
+  if (!username) {
+    throw new Error("Missing --username for hypixel-profile.");
+  }
+  if (!parsed.apiKey) {
+    throw new Error("Missing --apikey for hypixel-profile.");
+  }
+
+  const client = buildGamesClient(parsed);
+  const result = await client.getHypixelProfile(username);
+  if (parsed.json) {
+    process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+  } else {
+    const displayName = result.displayname || username;
+    const level = result.level || 0;
+    process.stdout.write(`${displayName} level=${level}\n`);
+  }
+  return 0;
+}
+
+async function runRocketLeaguePlayerCommand(parsed) {
+  const username = parsed.username || parsed.url;
+  const platform = parsed.divisionPlatform || parsed.platform || "psn";
+
+  if (!username) {
+    throw new Error("Missing --username for rocketleague-player.");
+  }
+  if (!parsed.apiKey) {
+    throw new Error("Missing --apikey for rocketleague-player.");
+  }
+
+  const client = buildGamesClient(parsed);
+  const result = await client.getRocketLeaguePlayer(username, platform);
+  if (parsed.json) {
+    process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+  } else {
+    const source = result && result.profile && result.profile.data ? result.profile.data : null;
+    const handle = source && source.platformInfo ? source.platformInfo.platformUserHandle : username;
+    process.stdout.write(`${handle} platform=${platform}\n`);
+  }
+  return 0;
+}
+
+async function runApexLegendsPlayerCommand(parsed) {
+  const username = parsed.username || parsed.url;
+  const platform = parsed.divisionPlatform || parsed.platform || "psn";
+
+  if (!username) {
+    throw new Error("Missing --username for apexlegends-player.");
+  }
+  if (!parsed.apiKey) {
+    throw new Error("Missing --apikey for apexlegends-player.");
+  }
+
+  const client = buildGamesClient(parsed);
+  const result = await client.getApexLegendsPlayer(username, platform);
+  if (parsed.json) {
+    process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+  } else {
+    const source = result && result.profile && result.profile.data ? result.profile.data : null;
+    const handle = source && source.platformInfo ? source.platformInfo.platformUserHandle : username;
+    process.stdout.write(`${handle} platform=${platform}\n`);
+  }
+  return 0;
+}
+
+async function runBattlefield1PlayerCommand(parsed) {
+  const username = parsed.username || parsed.url;
+  const platform = parsed.divisionPlatform || parsed.platform || "psn";
+
+  if (!username) {
+    throw new Error("Missing --username for battlefield1-player.");
+  }
+  if (!parsed.apiKey) {
+    throw new Error("Missing --apikey for battlefield1-player.");
+  }
+
+  const client = buildGamesClient(parsed);
+  const result = await client.getBattlefield1Player(username, platform);
+  if (parsed.json) {
+    process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+  } else {
+    const source = result && result.profile && result.profile.data ? result.profile.data : null;
+    const handle = source && source.platformInfo ? source.platformInfo.platformUserHandle : username;
+    process.stdout.write(`${handle} platform=${platform}\n`);
+  }
+  return 0;
+}
+
+async function runBattlefield5PlayerCommand(parsed) {
+  const username = parsed.username || parsed.url;
+  const platform = parsed.divisionPlatform || parsed.platform || "psn";
+
+  if (!username) {
+    throw new Error("Missing --username for battlefield5-player.");
+  }
+  if (!parsed.apiKey) {
+    throw new Error("Missing --apikey for battlefield5-player.");
+  }
+
+  const client = buildGamesClient(parsed);
+  const result = await client.getBattlefield5Player(username, platform);
+  if (parsed.json) {
+    process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+  } else {
+    const source = result && result.profile && result.profile.data ? result.profile.data : null;
+    const handle = source && source.platformInfo ? source.platformInfo.platformUserHandle : username;
+    process.stdout.write(`${handle} platform=${platform}\n`);
+  }
+  return 0;
+}
+
+async function runBattlefield2042PlayerCommand(parsed) {
+  const username = parsed.username || parsed.url;
+  const platform = parsed.divisionPlatform || parsed.platform || "ea";
+
+  if (!username) {
+    throw new Error("Missing --username for battlefield2042-player.");
+  }
+  if (!parsed.apiKey) {
+    throw new Error("Missing --apikey for battlefield2042-player.");
+  }
+
+  const client = buildGamesClient(parsed);
+  const result = await client.getBattlefield2042Player(username, platform);
+  if (parsed.json) {
+    process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+  } else {
+    const source = result && result.profile && result.profile.data ? result.profile.data : null;
+    const handle = source && source.platformInfo ? source.platformInfo.platformUserHandle : username;
+    process.stdout.write(`${handle} platform=${platform}\n`);
+  }
+  return 0;
+}
+
+async function runBattlefield6PlayerCommand(parsed) {
+  const username = parsed.username || parsed.url;
+  const platform = parsed.divisionPlatform || parsed.platform || "psn";
+
+  if (!username) {
+    throw new Error("Missing --username for battlefield6-player.");
+  }
+  if (!parsed.apiKey) {
+    throw new Error("Missing --apikey for battlefield6-player.");
+  }
+
+  const client = buildGamesClient(parsed);
+  const result = await client.getBattlefield6Player(username, platform);
+  if (parsed.json) {
+    process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+  } else {
+    const source = result && result.profile && result.profile.data ? result.profile.data : null;
+    const handle = source && source.platformInfo ? source.platformInfo.platformUserHandle : username;
+    process.stdout.write(`${handle} platform=${platform}\n`);
+  }
+  return 0;
 }
 
 async function runDownloadJobCreateCommand(parsed, mode) {
@@ -585,6 +1009,42 @@ function parseArgs(argv) {
       if (value) {
         result.files.push(value);
       }
+    } else if (token === "--username") {
+      result.username = argv[i + 1];
+      i += 1;
+    } else if (token === "--stream-platform") {
+      result.streamPlatform = argv[i + 1];
+      i += 1;
+    } else if (token === "--clan-tag") {
+      result.clanTag = argv[i + 1];
+      i += 1;
+    } else if (token === "--player-tag") {
+      result.playerTag = argv[i + 1];
+      i += 1;
+    } else if (token === "--tag") {
+      result.tag = argv[i + 1];
+      i += 1;
+    } else if (token === "--livestream-preset") {
+      result.livestreamPreset = argv[i + 1];
+      i += 1;
+    } else if (token === "--livestream-base-url") {
+      result.livestreamBaseUrl = argv[i + 1];
+      i += 1;
+    } else if (token === "--games-preset") {
+      result.gamesPreset = argv[i + 1];
+      i += 1;
+    } else if (token === "--games-base-url") {
+      result.gamesBaseUrl = argv[i + 1];
+      i += 1;
+    } else if (token === "--division-platform" || token === "--game-platform") {
+      result.divisionPlatform = argv[i + 1];
+      i += 1;
+    } else if (token === "--time-window") {
+      result.timeWindow = argv[i + 1];
+      i += 1;
+    } else if (token === "--creator-code" || token === "--code") {
+      result.creatorCode = argv[i + 1];
+      i += 1;
     } else if (token === "--url") {
       result.url = argv[i + 1];
       i += 1;
@@ -690,14 +1150,47 @@ Commands:
   download-info            Fetch metadata for URL
   download-search          Search YouTube
   download-stream-url      Build /api/stream URL
+  live-kick                Get Kick livestream data
+  live-twitch              Get Twitch livestream data
+  live-dlive               Get DLive livestream data
+  live-trovo               Get Trovo livestream data
+  live                     Get livestream data by --stream-platform
+  coc-clan                 Get Clash of Clans clan by tag
+  coc-player               Get Clash of Clans player by tag
+  division2-player         Get The Division 2 player by username/platform
+  td2-player               Alias for division2-player
+  fortnite-player          Get Fortnite player by username/time window
+  fn-player                Alias for fortnite-player
+  fortnite-creatorcode     Get Fortnite creator code details
+  fn-creatorcode           Alias for fortnite-creatorcode
+  fortnite-item-shop       Get current Fortnite item shop
+  fn-item-shop             Alias for fortnite-item-shop
+  wynncraft-profile        Get Wynncraft profile by username
+  wc-profile               Alias for wynncraft-profile
+  hypixel-profile          Get Hypixel profile by username
+  hp-profile               Alias for hypixel-profile
+  rocketleague-player      Get Rocket League player by username/platform
+  rl-player                Alias for rocketleague-player
+  apexlegends-player       Get Apex Legends player by username/platform
+  apex-player              Alias for apexlegends-player
+  battlefield1-player      Get Battlefield 1 player by username/platform
+  bf1-player               Alias for battlefield1-player
+  battlefield5-player      Get Battlefield 5 player by username/platform
+  bf5-player               Alias for battlefield5-player
+  battlefield2042-player   Get Battlefield 2042 player by username/platform
+  bf2042-player            Alias for battlefield2042-player
+  battlefield6-player      Get Battlefield 6 player by username/platform
+  bf6-player               Alias for battlefield6-player
   list-shorteners          Show built-in shortlink preset names
   list-download-presets    Show downloader API host presets
+  list-livestream-presets  Show livestream API host presets
+  list-games-presets       Show games API host presets
 
 Usage:
   nekosunevrtools download-mp3 --url <link> --apikey <key> [--upload-dest cdn]
   nekosunevrtools download-job --job-id <id> --apikey <key>
-  nekosunevrtools download-info --url <link>
-  nekosunevrtools download-search --query "alan walker" --limit 5
+  nekosunevrtools live-kick --username mugstv --apikey YOUR_KEY
+  nekosunevrtools coc-clan --clan-tag 2LLJYCUU8 --apikey YOUR_KEY
 
 Downloader options:
   --downloader-preset <name>   Host preset: nekosune|ballisticok (default: nekosune)
@@ -713,6 +1206,24 @@ Downloader options:
   --interval <ms>              Poll interval (default: 2000)
   --url <url>                  Target URL/link
   --apikey, --api-key, -k      API key for secured endpoints
+
+Livestream options:
+  --username <name>            Streamer username
+  --stream-platform <name>     kick|twitch|dlive|trovo (used with live)
+  --livestream-preset <name>   API host preset (default: nekosune)
+  --livestream-base-url <url>  Custom API base URL
+
+Games options:
+  --clan-tag <tag>             Clash of Clans clan tag
+  --player-tag <tag>           Clash of Clans player tag
+  --tag <tag>                  Generic tag alias
+  --username <name>            Game username (varies by endpoint)
+  --division-platform <name>   Game platform for supported commands (default: psn)
+  --game-platform <name>       Alias for --division-platform
+  --time-window <name>         Fortnite stats window (default: lifetime)
+  --creator-code <value>       Fortnite creator code
+  --games-preset <name>        API host preset (default: nekosune)
+  --games-base-url <url>       Custom API base URL
 
 Shared options:
   --json                       JSON output
@@ -743,7 +1254,11 @@ Discord progress options:
 `;
   process.stdout.write(helpText);
 }
-
 module.exports = {
   runCli
 };
+
+
+
+
+

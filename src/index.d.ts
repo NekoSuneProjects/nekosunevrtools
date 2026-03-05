@@ -200,6 +200,73 @@ export declare const platforms: {
 export declare const shortenerPresets: Record<string, string>;
 export declare const downloaderPresets: Record<string, string>;
 
+export interface LivestreamClientOptions {
+  apiKey?: string;
+  baseUrl?: string;
+  preset?: string;
+  timeoutMs?: number;
+}
+
+export interface LivestreamResult {
+  statusCode?: number;
+  status?: string;
+  username?: string;
+  displayname?: string;
+  avatar?: string;
+  livestream?: {
+    online?: boolean;
+    bg?: string | null;
+    title?: string | null;
+    viewer?: number | null;
+    game?: string | null;
+    preview?: string | null;
+    created_at?: string | null;
+  };
+  followers?: number;
+  [key: string]: unknown;
+}
+
+export declare class LivestreamClient {
+  constructor(options?: LivestreamClientOptions);
+  useBaseUrl(baseUrl: string): this;
+  usePreset(name: string): this;
+  getKick(username: string, options?: { apiKey?: string; timeoutMs?: number }): Promise<LivestreamResult>;
+  getTwitch(username: string, options?: { apiKey?: string; timeoutMs?: number }): Promise<LivestreamResult>;
+  getDlive(username: string, options?: { apiKey?: string; timeoutMs?: number }): Promise<LivestreamResult>;
+  getTrovo(username: string, options?: { apiKey?: string; timeoutMs?: number }): Promise<LivestreamResult>;
+  getByPlatform(platform: string, username: string, options?: { apiKey?: string; timeoutMs?: number }): Promise<LivestreamResult>;
+}
+
+export interface GamesClientOptions {
+  apiKey?: string;
+  baseUrl?: string;
+  preset?: string;
+  timeoutMs?: number;
+}
+
+export declare class GamesClient {
+  constructor(options?: GamesClientOptions);
+  useBaseUrl(baseUrl: string): this;
+  usePreset(name: string): this;
+  getClashOfClansClan(clanTag: string, options?: { apiKey?: string; timeoutMs?: number }): Promise<unknown>;
+  getClashOfClansPlayer(playerTag: string, options?: { apiKey?: string; timeoutMs?: number }): Promise<unknown>;
+  getDivision2Player(username: string, platform?: string, options?: { apiKey?: string; timeoutMs?: number }): Promise<unknown>;
+  getFortnitePlayer(username: string, timeWindow?: string, options?: { apiKey?: string; timeoutMs?: number }): Promise<unknown>;
+  getFortniteCreatorCode(creatorCode: string, options?: { apiKey?: string; timeoutMs?: number }): Promise<unknown>;
+  getFortniteItemShop(options?: { apiKey?: string; timeoutMs?: number }): Promise<unknown>;
+  getWynncraftProfile(username: string, options?: { apiKey?: string; timeoutMs?: number }): Promise<unknown>;
+  getHypixelProfile(username: string, options?: { apiKey?: string; timeoutMs?: number }): Promise<unknown>;
+  getRocketLeaguePlayer(username: string, platform?: string, options?: { apiKey?: string; timeoutMs?: number }): Promise<unknown>;
+  getApexLegendsPlayer(username: string, platform?: string, options?: { apiKey?: string; timeoutMs?: number }): Promise<unknown>;
+  getBattlefield1Player(username: string, platform?: string, options?: { apiKey?: string; timeoutMs?: number }): Promise<unknown>;
+  getBattlefield5Player(username: string, platform?: string, options?: { apiKey?: string; timeoutMs?: number }): Promise<unknown>;
+  getBattlefield2042Player(username: string, platform?: string, options?: { apiKey?: string; timeoutMs?: number }): Promise<unknown>;
+  getBattlefield6Player(username: string, platform?: string, options?: { apiKey?: string; timeoutMs?: number }): Promise<unknown>;
+}
+
+export declare const livestreamPresets: Record<string, string>;
+export declare const gamesPresets: Record<string, string>;
+
 export declare const upload: {
   Client: typeof UploadClient;
   providers: typeof platforms;
@@ -224,6 +291,22 @@ export declare const downloader: {
     compatible: unknown;
   };
   presets: typeof downloaderPresets;
+};
+
+export declare const livestream: {
+  Client: typeof LivestreamClient;
+  providers: {
+    nekosune: unknown;
+  };
+  presets: typeof livestreamPresets;
+};
+
+export declare const games: {
+  Client: typeof GamesClient;
+  providers: {
+    nekosune: unknown;
+  };
+  presets: typeof gamesPresets;
 };
 
 export declare const earnings: {

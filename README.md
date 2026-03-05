@@ -238,3 +238,75 @@ nekosunevrtools download-search --query "alan walker faded" --limit 5
 nekosunevrtools download-stream-url --url "https://example.com/file.mp3"
 nekosunevrtools list-download-presets
 ```
+
+## Livestream API
+
+Uses `nekosunevr-api-key`/Bearer auth with user-provided API key.
+
+SDK example:
+
+```js
+const { LivestreamClient } = require("@nekosuneprojects/nekosunevrtools");
+
+const live = new LivestreamClient({
+  apiKey: process.env.NEKOSUNEVR_API_KEY
+});
+
+const twitch = await live.getTwitch("nekosunevr");
+console.log(twitch.livestream && twitch.livestream.online);
+```
+
+CLI examples:
+
+```bash
+nekosunevrtools live-kick --username mugstv --apikey YOUR_KEY --json
+nekosunevrtools live-twitch --username nekosunevr --apikey YOUR_KEY --json
+nekosunevrtools live-dlive --username nekosunevr --apikey YOUR_KEY --json
+nekosunevrtools live-trovo --username nekosunevr --apikey YOUR_KEY --json
+```
+
+## Games API (Clash of Clans + The Division 2 + Fortnite + Wynncraft + Hypixel + Rocket League + Apex Legends + Battlefield 1 + Battlefield 5 + Battlefield 2042 + Battlefield 6)
+
+SDK:
+
+```js
+const { GamesClient } = require("@nekosuneprojects/nekosunevrtools");
+
+const games = new GamesClient({
+  apiKey: process.env.NEKOSUNEVR_API_KEY
+});
+
+const clan = await games.getClashOfClansClan("2LLJYCUU8");
+const player = await games.getClashOfClansPlayer("G99PGRC8V");
+const division2 = await games.getDivision2Player("ChisdealHDYT", "psn");
+const fortnite = await games.getFortnitePlayer("NekoSuneVR", "lifetime");
+const creator = await games.getFortniteCreatorCode("NekoSuneVR");
+const itemShop = await games.getFortniteItemShop();
+const wynncraft = await games.getWynncraftProfile("NekoSuneVR");
+const hypixel = await games.getHypixelProfile("NekoSuneVR");
+const rocketLeague = await games.getRocketLeaguePlayer("ChisdealHDYT", "psn");
+const apex = await games.getApexLegendsPlayer("ChisdealHDYT", "psn");
+const battlefield1 = await games.getBattlefield1Player("ChisdealHDYT", "psn");
+const battlefield5 = await games.getBattlefield5Player("ChisdealHDYT", "psn");
+const battlefield2042 = await games.getBattlefield2042Player("NekoSuneVR", "ea");
+const battlefield6 = await games.getBattlefield6Player("ChisdealHDYT", "psn");
+```
+
+CLI:
+
+```bash
+nekosunevrtools coc-clan --clan-tag 2LLJYCUU8 --apikey YOUR_KEY --json
+nekosunevrtools coc-player --player-tag G99PGRC8V --apikey YOUR_KEY --json
+nekosunevrtools division2-player --username ChisdealHDYT --division-platform psn --apikey YOUR_KEY --json
+nekosunevrtools fortnite-player --username NekoSuneVR --time-window lifetime --apikey YOUR_KEY --json
+nekosunevrtools fortnite-creatorcode --creator-code NekoSuneVR --apikey YOUR_KEY --json
+nekosunevrtools fortnite-item-shop --apikey YOUR_KEY --json
+nekosunevrtools wynncraft-profile --username NekoSuneVR --apikey YOUR_KEY --json
+nekosunevrtools hypixel-profile --username NekoSuneVR --apikey YOUR_KEY --json
+nekosunevrtools rocketleague-player --username ChisdealHDYT --game-platform psn --apikey YOUR_KEY --json
+nekosunevrtools apexlegends-player --username ChisdealHDYT --game-platform psn --apikey YOUR_KEY --json
+nekosunevrtools battlefield1-player --username ChisdealHDYT --game-platform psn --apikey YOUR_KEY --json
+nekosunevrtools battlefield5-player --username ChisdealHDYT --game-platform psn --apikey YOUR_KEY --json
+nekosunevrtools battlefield2042-player --username NekoSuneVR --game-platform ea --apikey YOUR_KEY --json
+nekosunevrtools battlefield6-player --username ChisdealHDYT --game-platform psn --apikey YOUR_KEY --json
+```
