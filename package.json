@@ -1,6 +1,6 @@
 {
   "name": "@nekosuneprojects/nekosunevrtools",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Multi-platform file upload client for Node.js with pluggable adapters, progress events, and CLI support.",
   "main": "src/index.js",
   "types": "src/index.d.ts",
