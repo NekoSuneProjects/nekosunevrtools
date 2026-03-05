@@ -2,6 +2,7 @@ const { UploadClient, providers: uploadProviders } = require("./upload/client");
 const { EarningsClient, shortenerPresets } = require("./earnings");
 const { providers: shorturlProviders } = require("./shorturl/providers");
 const videoProviders = require("./video/providers");
+const { DownloaderClient, presets: downloaderPresets, providers: downloaderProviders } = require("./downloader/client");
 
 module.exports = {
   upload: {
@@ -15,11 +16,18 @@ module.exports = {
   video: {
     providers: videoProviders
   },
+  downloader: {
+    Client: DownloaderClient,
+    providers: downloaderProviders,
+    presets: downloaderPresets
+  },
   earnings: {
     Client: EarningsClient
   },
   UploadClient,
   platforms: uploadProviders,
   EarningsClient,
-  shortenerPresets
+  shortenerPresets,
+  DownloaderClient,
+  downloaderPresets
 };

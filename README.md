@@ -199,3 +199,42 @@ nekosunevrtools shorten --url "https://example.com" --base-url "https://yourdoma
 npm login
 npm publish --access public
 ```
+
+## Downloader API (dl.nekosunevr.co.uk compatible)
+
+Supports compatible hosts like:
+- `https://dl.nekosunevr.co.uk`
+- `https://dl.ballisticok.xyz`
+
+SDK:
+
+```js
+const { DownloaderClient } = require("@nekosuneprojects/nekosunevrtools");
+
+const dl = new DownloaderClient({
+  apiKey: process.env.DL_API_KEY,
+  preset: "nekosune" // or "ballisticok"
+});
+
+const job = await dl.createMp3Job("https://www.youtube.com/watch?v=...", {
+  uploadDest: "cdn"
+});
+
+const done = await dl.waitForJob(job.jobId, {
+  onProgress: (state) => console.log(state.status, state.upload && state.upload.label)
+});
+
+console.log(done.url);
+```
+
+CLI:
+
+```bash
+nekosunevrtools download-mp3 --url "https://www.youtube.com/watch?v=..." --apikey YOUR_KEY --upload-dest cdn --wait
+nekosunevrtools download-mp4 --url "https://www.youtube.com/watch?v=..." --apikey YOUR_KEY --downloader-preset ballisticok --wait
+nekosunevrtools download-job --job-id <job-id> --apikey YOUR_KEY
+nekosunevrtools download-info --url "https://www.youtube.com/watch?v=..." --fields basic --flat
+nekosunevrtools download-search --query "alan walker faded" --limit 5
+nekosunevrtools download-stream-url --url "https://example.com/file.mp3"
+nekosunevrtools list-download-presets
+```

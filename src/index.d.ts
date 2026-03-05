@@ -88,6 +88,54 @@ export interface DoodstreamProvider extends VideoProviderAdapter {
   remoteUploadActions(context: unknown): Promise<{ provider: "doodstream"; success: boolean; raw: unknown }>;
 }
 
+export interface DownloadJobState {
+  job_id: string;
+  status: string;
+  url?: string | null;
+  download?: { percent?: number; label?: string };
+  convert?: { percent?: number; label?: string };
+  upload?: { percent?: number; label?: string };
+  [key: string]: unknown;
+}
+
+export interface DownloaderCreateJobResult {
+  provider: string;
+  jobId: string;
+  raw: unknown;
+}
+
+export interface DownloaderClientOptions {
+  apiKey?: string;
+  baseUrl?: string;
+  preset?: string;
+  timeoutMs?: number;
+}
+
+export interface DownloaderJobOptions {
+  apiKey?: string;
+  uploadDest?: "cdn" | "thirdparty" | "ipfs" | string;
+  timeoutMs?: number;
+}
+
+export interface DownloaderWaitOptions extends DownloaderJobOptions {
+  intervalMs?: number;
+  onProgress?: (state: DownloadJobState) => void;
+}
+
+export declare class DownloaderClient {
+  constructor(options?: DownloaderClientOptions);
+  useBaseUrl(baseUrl: string): this;
+  usePreset(name: string): this;
+  createMp3Job(link: string, options?: DownloaderJobOptions): Promise<DownloaderCreateJobResult>;
+  createMp4Job(link: string, options?: DownloaderJobOptions): Promise<DownloaderCreateJobResult>;
+  getJob(jobId: string, options?: DownloaderJobOptions): Promise<DownloadJobState>;
+  waitForJob(jobId: string, options?: DownloaderWaitOptions): Promise<DownloadJobState>;
+  getInfo(url: string, options?: { flat?: boolean; flatPlaylist?: boolean; fields?: "basic" | "full"; cache?: 0 | 1 | number; timeoutMs?: number }): Promise<unknown>;
+  searchYouTube(query: string, options?: { limit?: number; timeoutMs?: number }): Promise<unknown>;
+  getStreamUrl(url: string): string;
+  stream(url: string, options?: { responseType?: string; timeoutMs?: number }): Promise<unknown>;
+}
+
 export interface UploadAndShortenResult {
   success: true;
   upload: UploadResult;
@@ -150,6 +198,7 @@ export declare const platforms: {
 };
 
 export declare const shortenerPresets: Record<string, string>;
+export declare const downloaderPresets: Record<string, string>;
 
 export declare const upload: {
   Client: typeof UploadClient;
@@ -167,6 +216,14 @@ export declare const video: {
   providers: {
     doodstream: DoodstreamProvider;
   };
+};
+
+export declare const downloader: {
+  Client: typeof DownloaderClient;
+  providers: {
+    compatible: unknown;
+  };
+  presets: typeof downloaderPresets;
 };
 
 export declare const earnings: {
