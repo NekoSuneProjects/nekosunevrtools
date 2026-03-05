@@ -1,0 +1,31 @@
+{
+  "name": "@nekosuneprojects/nekosunevrtools",
+  "version": "1.1.0",
+  "description": "Multi-platform file upload client for Node.js with pluggable adapters, progress events, and CLI support.",
+  "main": "src/index.js",
+  "types": "src/index.d.ts",
+  "bin": {
+    "nekosunevrtools": "bin/nekosunevrtools.js"
+  },
+  "scripts": {
+    "check": "node --check src/index.js && node --check src/upload/client.js && node --check src/upload/providers.js && node --check src/upload/provider/upfiles.js && node --check src/upload/provider/fileio.js && node --check src/upload/provider/catbox.js && node --check src/upload/provider/transfersh.js && node --check src/shorturl/providers.js && node --check src/shorturl/provider/adlinkfly-compatible.js && node --check src/shorturl/provider/presets.js && node --check src/video/providers.js && node --check src/video/provider/doodstream.js && node --check src/upload-client.js && node --check src/earnings.js && node --check src/cli.js && node --check src/utils/file.js && node --check bin/nekosunevrtools.js"
+  },
+  "keywords": [
+    "upload",
+    "file-upload",
+    "upfiles",
+    "api-client",
+    "cli",
+    "discord",
+    "nodejs"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.8.4",
+    "form-data": "^4.0.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
